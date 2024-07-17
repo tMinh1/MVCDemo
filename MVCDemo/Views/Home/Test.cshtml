@@ -1,0 +1,114 @@
+﻿@model List<Domain.Books>
+
+@{
+    ViewData["Title"] = "Test";
+}
+
+<div class="text-center">
+    <h4>F12 để xem cách lấy dữ liệu theo ajax</h4>
+    @{
+        int stt = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        <div>
+            <span>@stt</span>
+            <span>@item.Name</span>
+            <span>@item.Code</span>
+        </div>
+        stt++;
+    }
+
+    <form>
+        <div class="form-group">
+            <label for="addName">Name</label>
+            <input type="text" class="form-control" id="addName" />
+        </div>
+        <div class="form-group">
+            <label for="addCode">Code</label>
+            <input type="text" class="form-control" id="addCode" />
+        </div>
+        <button type="button" class="btn btn-primary" id="btnAdd">Add</button>
+    </form>
+
+    <div class="mt-2">
+        <button type="button" class="btn btn-primary" id="btnRandom">Random</button>
+    </div>
+    
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: `/Home/Gets`,
+                success: function (data) {
+                    if (data) {
+                        console.log(data)
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi.');
+                }
+            });
+
+            $('#btnAdd').on('click', function () {
+                const name = $('#addName').val();
+                const code = $('#addCode').val();
+
+                if (name && name != "") { 
+                    const dt = {
+                        "Name": name,
+                        "Code": code
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        url: `/Home/Add`,
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        data: JSON.stringify(dt),
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (err) {
+                            alert('Lỗi.');
+                        }
+                    });
+                }
+            })
+
+            function randomIntFromInterval(min, max) { 
+                // min and max included
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+
+            $('#btnRandom').on('click', function () {
+                const num = randomIntFromInterval(1, 100000);
+
+                const dt = {
+                    "Name": `AAAAAA ${num}`,
+                    "Code": "BBBB"
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/Home/Add`,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    data: JSON.stringify(dt),
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert('Lỗi.');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -3,6 +3,7 @@ using MVCDemo.Data;
 using MVCDemo.Models;
 using System.Diagnostics;
 using Domain;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MVCDemo.Controllers
 {
@@ -19,8 +20,13 @@ namespace MVCDemo.Controllers
 
         public IActionResult Index()
         {
-            List<Books> book = _dbContext.Books.ToList();
             return View();
+        }
+
+        public IActionResult Test()
+        {
+            List<Books> book = _dbContext.Books.ToList();
+            return View(book);
         }
 
         public IActionResult Privacy()
@@ -32,6 +38,34 @@ namespace MVCDemo.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet("Home/Gets")]
+        public IActionResult Gets()
+        {
+            List<Books> book = _dbContext.Books.ToList();
+            if (!book.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
+        }
+
+        [HttpPost("Home/Add")]
+        public IActionResult Add([FromBody] Books data)
+        {
+            try
+            {
+                var result = _dbContext.Books.Add(data);
+                _dbContext.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
